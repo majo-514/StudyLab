@@ -27,15 +27,27 @@ for(const path of paths){
 }
 const search=JSON.parse(readFileSync(resolve(output,'search-index.json'),'utf8'));
 if(publish&& (report.mode!=='public'||report.markdown!==0||report.images.length||search.some(item=>item.source)))errors.push('Public build contains unapproved materials');
+const exercises=search.filter(item=>item.kind==='problem');
+if(report.questions!==exercises.length)errors.push('Question count differs from the import report');
+if(publish){
+  for(const chapter of search.filter(item=>item.kind==='chapter')){
+    if(!exercises.some(item=>item.chapter===chapter.id))errors.push(chapter.id+' missing a public exercise');
+  }
+  const practice=seen.get(relative(output,resolve(output,'practice/index.html')));
+  if(!exercises.length||!exercises.every(item=>item.id.startsWith('public-')&&practice?.includes('href="'+item.url+'"'))){
+    errors.push('Public practice list is empty, incomplete, or contains local coursework');
+  }
+}
+for(const entry of exercises){
+  const path=relative(output,resolve(output,'.'+entry.url.slice(base.length),'index.html'));
+  const html=seen.get(path);
+  if(!html?.includes('<details class="solution"'))errors.push(entry.id+' missing collapsed solution');
+  if(entry.id.startsWith('public-')&&!html?.includes('<details class="hint"'))errors.push(entry.id+' missing collapsed hint');
+}
 if(!publish){
-  if(report.questions!==search.filter(item=>item.kind==='problem').length)errors.push('Question count differs from the import report');
   if(report.markdown && ![...seen.values()].some(html=>html.includes('katex-display')))errors.push('No displayed mathematical formulas');
   const imageSources=new Set([...seen.values()].flatMap(html=>[...html.matchAll(/<img\s+[^>]*?src="([^"]+)"/g)].map(match=>match[1])));
   if(imageSources.size!==report.images.length)errors.push('Expected '+report.images.length+' imported images, found '+imageSources.size);
-  for(const entry of search.filter(item=>item.kind==='problem')){
-    const path=relative(output,resolve(output,'.'+entry.url.slice(base.length),'index.html'));
-    if(!seen.get(path)?.includes('<details class="solution"'))errors.push(entry.id+' missing collapsed solution');
-  }
 }
 if(errors.length)throw Error(errors.slice(0,30).join('\n'));
 console.log(paths.length+' 个页面通过路径、公式输出与'+(publish?'公开内容范围':'题解折叠')+'检查。');

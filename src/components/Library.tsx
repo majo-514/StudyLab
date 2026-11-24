@@ -58,7 +58,8 @@ export default function Library({mode,entries,chapters,indexUrl}:{mode:Mode;entr
       <label>范围 <select value={subset} onChange={event=>setSubset(event.target.value)}><option value="">全部</option><option value="wrong">错题</option><option value="favorite">收藏</option></select></label>
       <button disabled={!filtered.length} onClick={()=>location.assign(filtered[Math.floor(Math.random()*filtered.length)].url)}>从结果随机抽题</button>
     </div>
-    <p role="status">共 {filtered.length} 道题　{message}</p>{render(filtered)}
+    <p role="status">共 {filtered.length} 道题　{message}</p>
+    {filtered.length>0?render(filtered):<p>{subset==='wrong'?'当前筛选范围内没有错题。可在习题页将题目加入错题本。':'当前筛选条件下没有题目。可调整章节、题型或范围。'}</p>}
   </section>;
   return <section>
     <label>记录类型 <select value={subset} onChange={event=>setSubset(event.target.value)}>

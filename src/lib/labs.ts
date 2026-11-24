@@ -192,6 +192,8 @@ const chapters=[
   ['bloch','gap','tight','curvature','semiconductor','doping','holes','fullBand']
 ];
 const exercises:Record<string,string[]>={
+  'public-bragg-extinction':['miller'],'public-pair-force':['potential'],'public-phonon-gap':['dispersion'],
+  'public-diffusion-temperature':['arrhenius'],'public-hall-polarity':['hall'],'public-band-curvature':['curvature'],
   'ssp-001':['madelung-1d'],'ssp-002':['evjen'],'ssp-003':['dispersion'],'ssp-004':['crystal'],'ssp-005':['defect','arrhenius'],
   'review-c04':['miller'],'review-c15':['madelung-1d'],'review-c16':['potential'],'review-c17':['potential'],
   'review-c06':['reciprocal2'],'review-c10':['reciprocal2'],'review-c13':['reciprocal2'],'review-c14':['reciprocal2'],

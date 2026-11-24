@@ -27,10 +27,19 @@ function studyMarkdown(){
 function sections(){
   return tree=>{
     const result=[];
+    let hint;
     let solution;
     let nested;
     for(const node of tree.children){
       const title=node.children?.[0]?.value || '';
+      if(node.tagName==='h2'){
+        hint=undefined;
+        if(title==='提示'&&!solution){
+          hint={type:'element',tagName:'details',properties:{className:['hint']},children:[{...node,tagName:'summary'}]};
+          result.push(hint);
+          continue;
+        }
+      }
       if(node.tagName==='h2' && title==='展开推导与答案'){
         solution={type:'element',tagName:'details',properties:{className:['solution']},children:[{...node,tagName:'summary'}]};
         result.push(solution);
@@ -41,7 +50,7 @@ function sections(){
         solution.children.push(nested);
         continue;
       }
-      (nested?.children || solution?.children || result).push(node);
+      (nested?.children || solution?.children || hint?.children || result).push(node);
     }
     tree.children=result;
   };

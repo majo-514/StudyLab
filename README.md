@@ -2,7 +2,7 @@
 
 StudyLab 是用于专业课程复习的个人学习网站。固体物理包含六章、专项作业、总复习、习题与公式速查，同时保留数学泰勒展开专题。网站使用 Astro、MDX、React、TypeScript 与 KaTeX 静态生成，课程正文和公式无需等待客户端脚本加载。
 
-公开版只包含本站编写的章节简介和原创物理实验。课程原稿及题图仅在含本地资料的版本中使用。 [在线访问 StudyLab](https://majo-514.github.io/StudyLab/) · [GitHub 仓库](https://github.com/majo-514/StudyLab)
+公开版包含本站编写的六章简介、原创物理实验和原创练习。课程原稿、原课程题库及题图仅在含本地资料的版本中使用。 [在线访问 StudyLab](https://majo-514.github.io/StudyLab/) · [GitHub 仓库](https://github.com/majo-514/StudyLab)
 
 ## 在 Windows 上运行
 
@@ -33,7 +33,7 @@ pnpm.cmd dev --host 127.0.0.1 --port 4322
 | `materials/` | 本地原稿、原图、资料包说明、旧项目快照 |
 | `courses.json` | 课程及章节导航，使用固定章节 ID |
 | `scripts/import-materials.mjs` | 导入文件映射、题目拆分和来源记录 |
-| `examples/` | 公开构建使用的原创章节简介 |
+| `examples/` | 可公开的原创章节简介与练习 |
 | `src/pages/` | 课程、章节、训练、搜索和个人记录路由 |
 | `src/lib/physics.ts` 与 `src/lib/labs.ts` | 物理计算与实验注册 |
 | `src/components/` | 响应式实验、题库和学习记录 |
@@ -78,6 +78,6 @@ GitHub Pages 的发布源选择 **GitHub Actions**。仓库的工作流读取 Pa
 
 ## 内容来源与许可
 
-六章学习笔记、总复习、专项原题截图和课件插图来自用户提供的学习资料包。文件中有课件整理、课堂题与课件截取。公开权限待逐文件核实。公开构建只收录 `examples/` 中本站编写的章首内容和项目原创代码，第三方依赖遵循各自许可。项目代码和原创文字目前未指定额外的开源许可。详见 [权属说明](RIGHTS.md)。
+六章学习笔记、总复习、专项原题截图和课件插图来自用户提供的学习资料包。文件中有课件整理、课堂题与课件截取。公开权限待逐文件核实。公开构建使用 `examples/` 中本站编写的章首内容与练习和项目原创代码，第三方依赖遵循各自许可。项目代码和原创文字目前未指定额外的开源许可。详见 [权属说明](RIGHTS.md)。
 
 部分实验是资料所列模型的简化子集，例如近自由电子只展示局部两态模型。待实现能力和科学差异见 [验收记录](docs/acceptance.md)。

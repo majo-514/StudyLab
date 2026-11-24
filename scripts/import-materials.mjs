@@ -151,6 +151,22 @@ export function prepareMaterials() {
       records.push({id,title,course:'solid-state-physics',kind:'chapter',chapter:id,source:'',path,body,search:body});
     });
   }
+  const practiceDirectory=resolve('examples/exercises');
+  const publicExercises=readdirSync(practiceDirectory).filter(name=>name.endsWith('.md')).sort();
+  for(const file of publicExercises){
+    const path=join(practiceDirectory,file);
+    const raw=read(path);
+    const metadata=raw.match(front)?.[1]??'';
+    const chapter=metadata.match(/^chapter: ([a-z0-9-]+)$/m)?.[1];
+    const type=metadata.match(/^type: (计算与推导|简答)$/m)?.[1];
+    const text=raw.replace(front,'');
+    const title=text.match(altTitle)?.[1];
+    const body=text.replace(altTitle,'').trimStart();
+    if(!chapters.some(([id])=>id===chapter)||!type||!title||!/^## 题目$/m.test(body)||!/^## 提示$/m.test(body)||!/^## 展开推导与答案$/m.test(body)){
+      throw Error('原创练习缺少章节、题型、题干、提示或题解 '+file);
+    }
+    records.push({id:basename(file,'.md'),title,course:'solid-state-physics',chapter,kind:'problem',source:'StudyLab 原创练习',type,path,body,search:body});
+  }
   if(!publish) for(const course of courses.filter(entry=>entry.id!=='solid-state-physics')){
     const directory=resolve(materialRoot,course.directory);
     if(relative(materialRoot,directory).startsWith('..'))throw Error('课程路径须位于 materials 中');
