@@ -5,6 +5,5 @@ import {chapters,lessons,listItems} from '../lib/catalog';
 const exercises=listItems(lessons.filter(entry=>entry.kind==='problem'));
 ---
 <Layout title="习题训练"><h1>习题训练</h1>
-  {exercises.length>0&&exercises.every(entry=>entry.id.startsWith('public-'))&&<p>公开题库收录六章的原创练习。原课程题库可在本地版使用。</p>}
   <Library mode="practice" entries={exercises} chapters={chapters} client:load/>
 </Layout>

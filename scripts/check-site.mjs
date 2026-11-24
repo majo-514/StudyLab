@@ -30,13 +30,19 @@ if(publish&& (report.mode!=='public'||report.markdown!==0||report.images.length|
 const exercises=search.filter(item=>item.kind==='problem');
 if(report.questions!==exercises.length)errors.push('Question count differs from the import report');
 if(publish){
+  const approved=JSON.parse(readFileSync('published/solid-state-exercises.json','utf8'));
+  const approvedIds=new Set(approved.map(item=>item.id));
+  if(approved.length!==133||approvedIds.size!==133||exercises.filter(item=>approvedIds.has(item.id)).length!==133){
+    errors.push('Public build must include all 133 approved exercises exactly once');
+  }
   for(const chapter of search.filter(item=>item.kind==='chapter')){
     if(!exercises.some(item=>item.chapter===chapter.id))errors.push(chapter.id+' missing a public exercise');
   }
   const practice=seen.get(relative(output,resolve(output,'practice/index.html')));
-  if(!exercises.length||!exercises.every(item=>item.id.startsWith('public-')&&practice?.includes('href="'+item.url+'"'))){
-    errors.push('Public practice list is empty, incomplete, or contains local coursework');
+  if(!exercises.length||!exercises.every(item=>(approvedIds.has(item.id)||item.id.startsWith('public-'))&&practice?.includes('href="'+item.url+'"'))){
+    errors.push('Public practice list is empty, incomplete, or contains unapproved coursework');
   }
+  if([...seen.values()].some(html=>/<img\b|我的学习心得|homework\/|assets\/questions\//i.test(html)))errors.push('Public Pages must exclude images, private notes and local source paths');
 }
 for(const entry of exercises){
   const path=relative(output,resolve(output,'.'+entry.url.slice(base.length),'index.html'));

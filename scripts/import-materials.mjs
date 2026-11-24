@@ -150,6 +150,18 @@ export function prepareMaterials() {
       const body=read(path).replace(altTitle,'').trimStart();
       records.push({id,title,course:'solid-state-physics',kind:'chapter',chapter:id,source:'',path,body,search:body});
     });
+    const path=resolve('published/solid-state-exercises.json');
+    const approved=JSON.parse(read(path));
+    for(const exercise of approved){
+      const {id,title,chapter,type,source,body}=exercise;
+      if(typeof title!=='string' || typeof source!=='string' || !/^(?:ssp-\d{3}|question-[a-f0-9]{12}|review-[qc]\d{2}[a-z]?)$/.test(id) ||
+        !chapters.some(([chapterId])=>chapterId===chapter) || !['计算与推导','简答','专项'].includes(type) ||
+        typeof body!=='string' || !/^## 题目$/m.test(body) || !/^## 展开推导与答案$/m.test(body) ||
+        /!\[|<img\b|<svg\b|我的学习心得|homework\/|assets\/questions\//i.test(body)){
+        throw Error('已授权习题快照格式或发布范围不符 '+id);
+      }
+      records.push({id,title,chapter,type,source,kind:'problem',course:'solid-state-physics',path,body,search:body});
+    }
   }
   const practiceDirectory=resolve('examples/exercises');
   const publicExercises=readdirSync(practiceDirectory).filter(name=>name.endsWith('.md')).sort();

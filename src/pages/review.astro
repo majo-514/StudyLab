@@ -2,9 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import {lessons,url} from '../lib/catalog';
 const review=lessons.find(entry=>entry.kind==='review');
+const reviewQuestions=lessons.filter(entry=>entry.kind==='problem'&&entry.id.startsWith('review-'));
+const groups=[{prefix:'review-q',title:'复习问答'},{prefix:'review-c',title:'计算与推导'}];
 ---
 <Layout title="总复习与习题指导">
   <h1>总复习与习题指导</h1>
-  {review?<p><a href={url('study/'+review.id+'/')}>阅读总复习指导与课件勘误，按原题号练习</a></p>:<p>总复习资料收录于本地课程版。</p>}
+  {review&&<p><a href={url('study/'+review.id+'/')}>阅读总复习指导与课件勘误</a></p>}
   <div class="links"><a href={url('practice/')}>打开统一题库</a><a href={url('practice/?view=wrong')}>复习错题</a><a href={url('formulas/')}>公式速查</a></div>
+  {groups.map(group=><section>
+    <h2>{group.title}</h2>
+    <ul class="row-list">{reviewQuestions.filter(entry=>entry.id.startsWith(group.prefix)).map(entry=><li><a href={url('study/'+entry.id+'/')}>{entry.title}</a></li>)}</ul>
+  </section>)}
 </Layout>
