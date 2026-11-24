@@ -2,7 +2,7 @@
 
 StudyLab 是用于专业课程复习的个人学习网站。固体物理包含六章、专项作业、总复习、习题与公式速查，同时保留数学泰勒展开专题。网站使用 Astro、MDX、React、TypeScript 与 KaTeX 静态生成，课程正文和公式无需等待客户端脚本加载。
 
-公开版只包含本站编写的章节简介和原创物理实验。上线后，访问地址以 GitHub 仓库 **Settings → Pages** 显示的 URL 为准。课程原稿及题图仅在含本地资料的版本中使用。
+公开版只包含本站编写的章节简介和原创物理实验。课程原稿及题图仅在含本地资料的版本中使用。 [在线访问 StudyLab](https://majo-514.github.io/StudyLab/) · [GitHub 仓库](https://github.com/majo-514/StudyLab)
 
 ## 在 Windows 上运行
 
