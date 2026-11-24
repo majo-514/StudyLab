@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Library from '../components/Library';
+import {chapters,lessons,listItems} from '../lib/catalog';
+const exercises=listItems(lessons.filter(entry=>entry.kind==='problem'));
+---
+<Layout title="习题训练"><h1>习题训练</h1>
+  {exercises.length===0&&<p>本版本提供原创实验。获准公开的题库可在资料审核后接入。</p>}
+  <Library mode="practice" entries={exercises} chapters={chapters} client:load/>
+</Layout>

@@ -1,0 +1,6 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Library from '../components/Library';
+import {chapters,lessons,listItems} from '../lib/catalog';
+---
+<Layout title="学习记录"><h1>学习记录</h1><Library mode="records" entries={listItems(lessons)} chapters={chapters} client:load/></Layout>

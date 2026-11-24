@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Lab from '../../components/Lab';
+import ScienceLab from '../../components/ScienceLab';
+import Notes from '../../components/Notes';
+import {chapters,courses,lessons,markdown,url,type Lesson} from '../../lib/catalog';
+import {registry,labIds} from '../../lib/labs';
+
+export function getStaticPaths(){
+  const items:Lesson[]=[...lessons];
+  for(const chapter of chapters) if(!items.some(item=>item.id===chapter.id)){
+    items.push({ ...chapter, chapter:chapter.id, kind:'chapter', source:'', search:'' });
+  }
+  return items.map(lesson=>({params:{id:lesson.id},props:{lesson}}));
+}
+const {lesson}=Astro.props;
+const page=markdown(lesson.id);
+const Content=page?.Content;
+const headings=lesson.kind==='problem'?(page?.getHeadings().filter(h=>h.text==='题目')??[]):(page?.getHeadings().filter(h=>h.depth<=3)??[]);
+const chapter=chapters.findIndex(ch=>ch.id===lesson.chapter);
+const chapterEntry=chapters[chapter];
+const isChapter=lesson.kind==='chapter';
+const experiments=lesson.course==='solid-state-physics'?labIds(lesson.id,chapter,isChapter):[];
+const courseTitle=courses.find(course=>course.id===lesson.course)?.title??'数学';
+const related=lessons.filter(item=>isChapter?item.chapter===lesson.id&&item.id!==lesson.id:item.id===lesson.parent);
+---
+<Layout title={lesson.title}>
+  <p><a href={url()}>首页</a>　/　<a href={url('subjects/'+lesson.course+'/')}>{courseTitle}</a>
+  {chapterEntry&&!isChapter&&<>　/　<a href={url('study/'+chapterEntry.id+'/')}>{chapterEntry.title}</a></>}</p>
+  <div class="reading">
+    <aside><details open><summary>本页目录</summary>
+      {headings.map(item=><a href={'#'+item.slug}>{item.text}</a>)}
+      {experiments.length>0&&<a href="#labs">交互实验</a>}
+      {related.length>0&&<a href="#related">关联资料</a>}
+      <a href="#notes">学习记录</a>
+    </details></aside>
+    <article>
+      <h1>{lesson.title}</h1>
+      {lesson.source&&<p class="meta">资料来源　{lesson.source}</p>}
+      {Content?<Content/>:lesson.source===''&&<p>本章公开版提供原创交互实验。</p>}
+      {experiments.length>0&&<section id="labs">
+        <h2>交互实验</h2>
+        {experiments.map(id=><details><summary>{id==='madelung-1d'?'一维马德隆常数':registry[id].title}</summary>
+          {id==='madelung-1d'?<Lab client:visible/>:<ScienceLab id={id} client:visible/>}
+        </details>)}
+      </section>}
+      {related.length>0&&<section id="related"><h2>关联资料</h2><ul class="row-list">{related.map(item=><li><a href={url('study/'+item.id+'/')}>{item.title}</a></li>)}</ul></section>}
+      <Notes id={lesson.id} problem={lesson.kind==='problem'} client:load/>
+      {isChapter&&<p class="links">
+        {chapters[chapter-1]?.course===lesson.course&&<a href={url('study/'+chapters[chapter-1].id+'/')}>上一章</a>}
+        {chapters[chapter+1]?.course===lesson.course&&<a href={url('study/'+chapters[chapter+1].id+'/')}>下一章</a>}
+      </p>}
+    </article>
+  </div>
+</Layout>

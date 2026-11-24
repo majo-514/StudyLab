@@ -1,0 +1,37 @@
+---
+import 'katex/dist/katex.min.css';
+import '../style.css';
+import {url} from '../lib/catalog';
+const {title}=Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{title} · StudyLab</title>
+  <script is:inline>try{document.documentElement.dataset.theme=localStorage.getItem('study-lab.theme')||'system'}catch{}</script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <header><nav aria-label="全站导航">
+    <a class="brand" href={url()}>StudyLab</a>
+    <a href={url('subjects/solid-state-physics/')}>课程</a>
+    <a href={url('practice/')}>训练</a>
+    <a href={url('search/')}>搜索</a>
+    <a href={url('records/')}>学习记录</a>
+    <label class="theme">主题 <select id="theme"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+  </nav></header>
+  <main id="main"><slot/></main>
+  <footer>StudyLab · 课程笔记与物理实验</footer>
+  <script>
+    const theme=document.querySelector<HTMLSelectElement>('#theme');
+    if(theme){
+      theme.value=document.documentElement.dataset.theme || 'system';
+      theme.addEventListener('change',()=>{
+        document.documentElement.dataset.theme=theme.value;
+        try{localStorage.setItem('study-lab.theme',theme.value)}catch{alert('当前浏览器无法保存主题偏好。')}
+      });
+    }
+  </script>
+</body></html>

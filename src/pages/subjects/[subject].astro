@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {chapters,courses,lessons,url} from '../../lib/catalog';
+export function getStaticPaths(){
+  const all=[...courses,...(lessons.some(x=>x.course==='mathematics')?[{id:'mathematics',title:'数学'}]:[])];
+  return all.map(course=>({params:{subject:course.id},props:{course}}));
+}
+const {course}=Astro.props;
+const sections=chapters.filter(chapter=>chapter.course===course.id);
+const articles=lessons.filter(entry=>entry.course===course.id);
+---
+<Layout title={course.title}>
+  <p><a href={url()}>学习首页</a></p>
+  <h1>{course.title}</h1>
+  <ul class="row-list">{sections.map(chapter=><li><a href={url('study/'+chapter.id+'/')}>{chapter.title}</a></li>)}</ul>
+  {sections.length>0&&<div class="links">
+    <a href={url('practice/')}>专项习题</a>
+    <a href={url('review/')}>总复习与训练</a>
+    <a href={url('formulas/')}>公式速查</a>
+    <a href={url('records/?view=wrong')}>错题本</a>
+    <a href={url('records/?view=notes')}>学习笔记</a>
+  </div>}
+  {sections.length===0&&<ul class="row-list">{articles.map(entry=><li><a href={url('study/'+entry.id+'/')}>{entry.title}</a></li>)}</ul>}
+</Layout>

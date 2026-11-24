@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {chapters,lessons,url,markdown} from '../lib/catalog';
+---
+<Layout title="公式速查"><h1>公式速查</h1>
+  <ul class="row-list">{chapters.map(chapter=>{
+    const section=lessons.find(entry=>entry.chapter===chapter.id&&entry.kind==='formula');
+    const headings=markdown(chapter.id)?.getHeadings()??[];
+    const quick=headings.find(heading=>/速查|公式索引|公式与易错/.test(heading.text));
+    return <li><a href={url('study/'+(section?.id??chapter.id)+'/')+(section?'':quick?'#'+quick.slug:'#labs')}>{chapter.title}</a></li>;
+  })}</ul>
+</Layout>

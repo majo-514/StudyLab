@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.study-cache/
+materials/
+.env*
+study-lab-backup*.json
+private/
+.pnpm-store/

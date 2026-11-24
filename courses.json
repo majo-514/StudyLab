@@ -1,0 +1,39 @@
+[
+  {
+    "id": "solid-state-physics",
+    "title": "固体物理",
+    "directory": "solid-state physics",
+    "chapters": [
+      [
+        "chapter-01-crystal-structure",
+        "第一章 晶体结构",
+        "chapter01"
+      ],
+      [
+        "chapter-02-crystal-binding",
+        "第二章 晶体结合",
+        "chapter02"
+      ],
+      [
+        "chapter-03-lattice-vibrations",
+        "第三章 晶格热振动",
+        "chapter03"
+      ],
+      [
+        "chapter-04-crystal-defects",
+        "第四章 晶体缺陷",
+        "chapter04"
+      ],
+      [
+        "chapter-05-free-electron",
+        "第五章 固体自由电子论",
+        "chapter05"
+      ],
+      [
+        "chapter-06-band-theory",
+        "第六章 能带理论",
+        "chapter06"
+      ]
+    ]
+  }
+]

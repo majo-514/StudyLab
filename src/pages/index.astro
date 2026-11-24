@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Library from '../components/Library';
+import {chapters,courses,lessons,listItems,url} from '../lib/catalog';
+---
+<Layout title="学习首页">
+  <h1>学习工作台</h1>
+  <p>按章节阅读课程笔记，操作物理实验，并用题库复习。</p>
+  <section class="panel"><h2>课程</h2>
+    <ul class="row-list">{courses.map(course=><li><a href={url('subjects/'+course.id+'/')}>{course.title}</a>　<small>{course.chapters.length} 章</small></li>)}
+    {lessons.some(x=>x.course==='mathematics')&&<li><a href={url('subjects/mathematics/')}>数学</a></li>}</ul>
+    <div class="links"><a href={url('practice/?view=wrong')}>错题专项训练</a><a href={url('records/?view=notes')}>个人笔记</a><a href={url('formulas/')}>公式速查</a></div>
+  </section>
+  <Library client:load mode="home" entries={listItems(lessons)} chapters={chapters}/>
+</Layout>
