@@ -12,7 +12,6 @@ for(const path of paths){
   const html=readFileSync(resolve(output,path),'utf8');
   seen.set(path,html);
   if(html.includes('katex-error')) errors.push(path+' contains a KaTeX error');
-  if(publish && /原始题目|homework\/|课件勘误快速索引/.test(html))errors.push(path+' may contain local material');
   for(const match of html.matchAll(/\b(?:href|src)="([^"]+)"/g)){
     const value=match[1];
     if(!value.startsWith('/')||value.startsWith('//'))continue;
@@ -30,6 +29,14 @@ if(publish&& (report.mode!=='public'||report.markdown!==0||report.images.length|
 const exercises=search.filter(item=>item.kind==='problem');
 if(report.questions!==exercises.length)errors.push('Question count differs from the import report');
 if(publish){
+  const approvedLessons=JSON.parse(readFileSync('published/solid-state-lessons.json','utf8'));
+  const coursePages=search.filter(item=>item.kind!=='problem');
+  if(approvedLessons.length!==13||coursePages.length!==13||!approvedLessons.every(lesson=>coursePages.some(item=>item.id===lesson.id))){
+    errors.push('Public build must include every approved chapter and revision document');
+  }
+  const review=coursePages.find(item=>item.kind==='review');
+  const reviewHtml=review&&seen.get(relative(output,resolve(output,'.'+review.url.slice(base.length),'index.html')));
+  if(!reviewHtml?.includes('课件勘误快速索引'))errors.push('Public review guide is missing its approved errata section');
   const approved=JSON.parse(readFileSync('published/solid-state-exercises.json','utf8'));
   const approvedIds=new Set(approved.map(item=>item.id));
   if(approved.length!==133||approvedIds.size!==133||exercises.filter(item=>approvedIds.has(item.id)).length!==133){
@@ -37,6 +44,8 @@ if(publish){
   }
   for(const chapter of search.filter(item=>item.kind==='chapter')){
     if(!exercises.some(item=>item.chapter===chapter.id))errors.push(chapter.id+' missing a public exercise');
+    const html=seen.get(relative(output,resolve(output,'.'+chapter.url.slice(base.length),'index.html')));
+    if(!html?.includes('katex-display')||!html?.includes('关联资料'))errors.push(chapter.id+' missing lecture formulas or exercise navigation');
   }
   const practice=seen.get(relative(output,resolve(output,'practice/index.html')));
   if(!exercises.length||!exercises.every(item=>(approvedIds.has(item.id)||item.id.startsWith('public-'))&&practice?.includes('href="'+item.url+'"'))){

@@ -144,12 +144,17 @@ export function prepareMaterials() {
     manifest.push({source,status:'本地收录',id,questions,bytes:Buffer.byteLength(raw)});
   }
   if(!markdown.length){
-    const examples=['crystal','binding','vibrations','defects','electron','bands'];
-    chapters.forEach(([id,title],i)=>{
-      const path=resolve('examples/'+examples[i]+'.md');
-      const body=read(path).replace(altTitle,'').trimStart();
-      records.push({id,title,course:'solid-state-physics',kind:'chapter',chapter:id,source:'',path,body,search:body});
-    });
+    const lessonsPath=resolve('published/solid-state-lessons.json');
+    for(const {id,title,chapter,kind,source,body} of JSON.parse(read(lessonsPath))){
+      if(typeof title!=='string' || typeof source!=='string' || !/^[a-z0-9-]+$/.test(id) ||
+        !['chapter','exercise','formula','review'].includes(kind) ||
+        (kind!=='review' && !chapters.some(([chapterId])=>chapterId===chapter)) ||
+        typeof body!=='string' || !body.trim() ||
+        /!\[|<img\b|<svg\b|我的学习心得|homework\/|assets\/questions\//i.test(body)){
+        throw Error('已授权讲义快照格式或发布范围不符 '+id);
+      }
+      records.push({id,title,chapter,kind,source,course:'solid-state-physics',path:lessonsPath,body,search:body});
+    }
     const path=resolve('published/solid-state-exercises.json');
     const approved=JSON.parse(read(path));
     for(const exercise of approved){

@@ -2,7 +2,7 @@
 
 StudyLab 是用于专业课程复习的个人学习网站。固体物理包含六章、专项作业、总复习、习题与公式速查，同时保留数学泰勒展开专题。网站使用 Astro、MDX、React、TypeScript 与 KaTeX 静态生成，课程正文和公式无需等待客户端脚本加载。
 
-公开版包含六章简介、原创物理实验、6 道原创练习，以及经确认可公开的 133 道课程题干和解析。完整课程原稿和原题截图保存在本地。 [在线访问 StudyLab](https://majo-514.github.io/StudyLab/) · [GitHub 仓库](https://github.com/majo-514/StudyLab)
+公开版包含固体物理六章讲义、章节习题索引、公式速查与总复习指导，并提供物理实验、6 道原创练习和经确认可公开的 133 道课程习题。原始课件、原题截图和讲义插图保存在本地。 [在线访问 StudyLab](https://majo-514.github.io/StudyLab/) · [GitHub 仓库](https://github.com/majo-514/StudyLab)
 
 ## 在 Windows 上运行
 
@@ -33,8 +33,9 @@ pnpm.cmd dev --host 127.0.0.1 --port 4322
 | `materials/` | 本地原稿、原图、资料包说明、旧项目快照 |
 | `courses.json` | 课程及章节导航，使用固定章节 ID |
 | `scripts/import-materials.mjs` | 导入文件映射、题目拆分和来源记录 |
-| `examples/` | 可公开的原创章节简介与练习 |
+| `examples/` | 原创课程简介和练习资料 |
 | `published/solid-state-exercises.json` | 经确认可公开的 133 道课程题文字快照 |
+| `published/solid-state-lessons.json` | 经确认可公开的 13 份固体物理讲义与复习资料文字快照 |
 | `src/pages/` | 课程、章节、训练、搜索和个人记录路由 |
 | `src/lib/physics.ts` 与 `src/lib/labs.ts` | 物理计算与实验注册 |
 | `src/components/` | 响应式实验、题库和学习记录 |
@@ -79,6 +80,6 @@ GitHub Pages 的发布源选择 **GitHub Actions**。仓库的工作流读取 Pa
 
 ## 内容来源与许可
 
-六章学习笔记、总复习、专项原题截图和课件插图来自用户提供的学习资料包。公开构建只读取已纳入仓库的原创内容及 133 道课程题的文字快照。授权范围包括题干和解析，原题截图和完整课件归档保存在本地。更新课程题的公开版本时，先核对授权，再运行 `node scripts/export-approved-exercises.mjs` 并检查快照差异。第三方依赖遵循各自许可。详见 [权属说明](RIGHTS.md)。
+六章学习笔记、总复习、专项原题截图和课件插图来自用户提供的学习资料包。公开构建读取已纳入仓库的原创内容和已授权的讲义与习题文字快照。更新公开版前先核对授权，再运行 `node scripts/export-approved-lessons.mjs` 或 `node scripts/export-approved-exercises.mjs`，检查快照差异后提交。第三方依赖遵循各自许可。详见 [权属说明](RIGHTS.md)。
 
 部分实验是资料所列模型的简化子集，例如近自由电子只展示局部两态模型。待实现能力和科学差异见 [验收记录](docs/acceptance.md)。
