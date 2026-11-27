@@ -1,8 +1,8 @@
 import {useEffect,useRef,useState} from 'react';
 import {encode,hasEdits,mergeNew,parse,read,save,statuses,type Records} from '../lib/learning';
-type Link={id:string;title:string;url:string;kind:string;chapter:string|null;type?:string;search?:string};
-type Mode='home'|'practice'|'records'|'search';
-export default function Library({mode,entries,chapters,indexUrl}:{mode:Mode;entries:Link[];chapters:{id:string;title:string}[];indexUrl?:string}){
+type Link={id:string;title:string;url:string;kind:string;chapter:string|null;type?:string};
+type Mode='home'|'practice'|'records';
+export default function Library({mode,entries,chapters}:{mode:Mode;entries:Link[];chapters:{id:string;title:string}[]}){
   const [items,setItems]=useState<Records>({});
   const [message,say]=useState('');
   const [preview,setPreview]=useState<Records|null>(null);
@@ -10,20 +10,13 @@ export default function Library({mode,entries,chapters,indexUrl}:{mode:Mode;entr
   const [type,setType]=useState('');
   const [status,setStatus]=useState('');
   const [subset,setSubset]=useState('');
-  const [query,setQuery]=useState('');
-  const [index,setIndex]=useState<Link[]>([]);
-  const [loaded,setLoaded]=useState(false);
   const request=useRef(0);
   function attempt(action:()=>void){try{action()}catch(error){say('操作失败，'+String(error))}}
   useEffect(()=>{
     attempt(()=>setItems(read()));
     const view=new URLSearchParams(location.search).get('view');
     if(view) setSubset(view);
-    if(indexUrl) fetch(indexUrl).then(response=>{
-      if(!response.ok) throw Error('搜索索引暂不可用');
-      return response.json() as Promise<Link[]>;
-    }).then(setIndex).catch(error=>say(String(error))).finally(()=>setLoaded(true));
-  },[indexUrl]);
+  },[]);
 
   const filtered=entries.filter(entry=>(!chapter||entry.chapter===chapter) && (!type||entry.type===type)
     && (!status||(items[entry.id]?.status??'new')===status)
@@ -31,12 +24,10 @@ export default function Library({mode,entries,chapters,indexUrl}:{mode:Mode;entr
   const recent=entries.filter(entry=>items[entry.id]?.visited)
     .sort((a,b)=>(items[b.id].visited??'').localeCompare(items[a.id].visited??'')).slice(0,5);
   const mastered=chapters.filter(entry=>items[entry.id]?.status==='mastered').length;
-  const words=query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const matches=words.length?index.filter(entry=>words.every(word=>(entry.title+' '+(entry.search??'')).toLowerCase().includes(word))):[];
   const types=[...new Set(entries.map(entry=>entry.type).filter(Boolean))];
   const render=(list:Link[])=><ul className="row-list">{list.map(entry=><li key={entry.id}>
     <a href={entry.url}>{entry.title}</a>
-    {mode!=='search'&&<small>　{statuses[items[entry.id]?.status??'new']}</small>}
+    <small>　{statuses[items[entry.id]?.status??'new']}</small>
     {mode==='records'&&items[entry.id]?.note&&<p style={{whiteSpace:'pre-wrap'}}>{items[entry.id].note}</p>}
   </li>)}</ul>;
 
@@ -44,11 +35,6 @@ export default function Library({mode,entries,chapters,indexUrl}:{mode:Mode;entr
     <p>已掌握 {mastered} / {chapters.length} 章</p><progress max={chapters.length||1} value={mastered} aria-label="已掌握章节"/>
     <h3>最近学习</h3>{recent.length?render(recent):<p>打开一个学习条目后，访问记录会显示在这里。</p>}
     <p role="status">{message}</p>
-  </section>;
-  if(mode==='search')return <section>
-    <label>搜索课程、知识点或题目<input type="search" value={query} onChange={event=>setQuery(event.target.value)}/></label>
-    {query.trim()&&<p role="status">{loaded?'找到 '+matches.length+' 条'+(matches.length>80?'，显示前 80 条':''):'加载中'}</p>}
-    {render(matches.slice(0,80))}<p role="status">{message}</p>
   </section>;
   if(mode==='practice')return <section>
     <div className="controls">

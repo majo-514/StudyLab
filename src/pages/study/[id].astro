@@ -4,7 +4,7 @@ import Lab from '../../components/Lab';
 import ScienceLab from '../../components/ScienceLab';
 import Notes from '../../components/Notes';
 import {chapters,courses,lessons,markdown,url,type Lesson} from '../../lib/catalog';
-import {registry,labIds} from '../../lib/labs';
+import {labIds,labTitle} from '../../lib/labs';
 
 export function getStaticPaths(){
   const items:Lesson[]=[...lessons];
@@ -40,7 +40,7 @@ const related=lessons.filter(item=>isChapter?item.chapter===lesson.id&&item.id!=
       {Content?<Content/>:lesson.source===''&&<p>本章公开版提供原创交互实验。</p>}
       {experiments.length>0&&<section id="labs">
         <h2>交互实验</h2>
-        {experiments.map(id=><details><summary>{id==='madelung-1d'?'一维马德隆常数':registry[id].title}</summary>
+        {experiments.map(id=><details id={'lab-'+id}><summary>{labTitle(id)}</summary>
           {id==='madelung-1d'?<Lab client:visible/>:<ScienceLab id={id} client:visible/>}
         </details>)}
       </section>}
@@ -53,3 +53,14 @@ const related=lessons.filter(item=>isChapter?item.chapter===lesson.id&&item.id!=
     </article>
   </div>
 </Layout>
+
+<script>
+  function openLinkedExperiment() {
+    const id = location.hash.slice(1);
+    if (!id.startsWith('lab-')) return;
+    const experiment = document.getElementById(id);
+    if (experiment instanceof HTMLDetailsElement) experiment.open = true;
+  }
+  openLinkedExperiment();
+  window.addEventListener('hashchange', openLinkedExperiment);
+</script>

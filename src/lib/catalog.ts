@@ -19,8 +19,8 @@ export const lessons:Lesson[]=input;
 export const pages=import.meta.glob<MarkdownInstance<Lesson>>('../../.study-cache/*.md',{eager:true});
 export const markdown=(id:string)=>pages['../../.study-cache/'+id+'.md'];
 export const url=(path='')=>import.meta.env.BASE_URL.replace(/\/$/,'')+'/'+path.replace(/^\//,'');
-export function listItems(entries:Lesson[], includeText=false){
-  return entries.map(({id,title,chapter,kind,type,search})=>({
-    id,title,chapter,kind,type,url:url('study/'+id+'/'),search:includeText?search:undefined
+export function listItems(entries:Lesson[]){
+  return entries.map(({id,title,chapter,kind,type})=>({
+    id,title,chapter,kind,type,url:url('study/'+id+'/')
   }));
 }

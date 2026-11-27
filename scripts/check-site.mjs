@@ -26,11 +26,28 @@ for(const path of paths){
 }
 const search=JSON.parse(readFileSync(resolve(output,'search-index.json'),'utf8'));
 if(publish&& (report.mode!=='public'||report.markdown!==0||report.images.length||search.some(item=>item.source)))errors.push('Public build contains unapproved materials');
+const searchIds=new Set();
+for(const entry of search){
+  if(searchIds.has(entry.id))errors.push('Duplicate search entry '+entry.id);
+  searchIds.add(entry.id);
+  const [pathname,fragment]=entry.url.split('#');
+  if(!pathname.startsWith(base+'/')){
+    errors.push('Search result escapes the project base '+entry.url);
+    continue;
+  }
+  const html=seen.get(relative(output,resolve(output,'.'+pathname.slice(base.length),'index.html')));
+  if(!html || (fragment && !html.includes(' id="'+decodeURIComponent(fragment)+'"'))){
+    errors.push('Search result points to a missing page or section '+entry.url);
+  }
+}
+if(!search.some(item=>item.kind==='section')||!search.some(item=>item.kind==='lab')){
+  errors.push('Search index is missing direct links to knowledge points or experiments');
+}
 const exercises=search.filter(item=>item.kind==='problem');
 if(report.questions!==exercises.length)errors.push('Question count differs from the import report');
 if(publish){
   const approvedLessons=JSON.parse(readFileSync('published/solid-state-lessons.json','utf8'));
-  const coursePages=search.filter(item=>item.kind!=='problem');
+  const coursePages=search.filter(item=>!['problem','section','lab','course','page'].includes(item.kind));
   if(approvedLessons.length!==13||coursePages.length!==13||!approvedLessons.every(lesson=>coursePages.some(item=>item.id===lesson.id))){
     errors.push('Public build must include every approved chapter and revision document');
   }
@@ -65,4 +82,4 @@ if(!publish){
   if(imageSources.size!==report.images.length)errors.push('Expected '+report.images.length+' imported images, found '+imageSources.size);
 }
 if(errors.length)throw Error(errors.slice(0,30).join('\n'));
-console.log(paths.length+' 个页面通过路径、公式输出与'+(publish?'公开内容范围':'题解折叠')+'检查。');
+console.log(paths.length+' 个页面、'+search.length+' 条搜索链接通过路径、公式输出与'+(publish?'公开内容范围':'题解折叠')+'检查。');

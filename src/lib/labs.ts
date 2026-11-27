@@ -201,3 +201,4 @@ const exercises:Record<string,string[]>={
   'review-c21a':['copper'],'review-c22':['curvature'],'review-c23':['tight'],
 };
 export function labIds(id:string,chapter:number,isChapter:boolean):string[]{return isChapter?chapters[chapter]??[]:exercises[id]??[]}
+export const labTitle=(id:string)=>id==='madelung-1d'?'一维马德隆常数':registry[id].title;

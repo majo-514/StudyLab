@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Library from '../components/Library';
+import SiteSearch from '../components/SiteSearch';
 import {url} from '../lib/catalog';
 ---
-<Layout title="全站搜索"><h1>全站搜索</h1><Library mode="search" entries={[]} chapters={[]} indexUrl={url('search-index.json')} client:load/></Layout>
+<Layout title="全站搜索">
+  <h1>全站搜索</h1>
+  <SiteSearch indexUrl={url('search-index.json')} client:load/>
+</Layout>
