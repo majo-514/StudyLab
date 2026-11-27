@@ -1,0 +1,154 @@
+---
+import {courses, url} from '../lib/catalog';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+---
+<details id="quick-nav" class="quick-nav">
+  <summary>快捷导航</summary>
+  <nav class="quick-nav-panel" aria-label="快捷导航">
+    <div class="quick-nav-actions">
+      <a href="#page-top">回到顶部</a>
+      <a href={url()}>回到首页</a>
+    </div>
+    <p class="quick-nav-heading">章节跳转</p>
+    {courses.map(course => (
+      <div>
+        {courses.length > 1 && <p class="quick-nav-course">{course.title}</p>}
+        <ul class="quick-nav-chapters">
+          {course.chapters.map(([id, title]) => {
+            const href = url('study/' + id + '/');
+            const isCurrent = currentPath === href.replace(/\/$/, '');
+            return <li><a href={href} aria-current={isCurrent ? 'page' : undefined}>{title}</a></li>;
+          })}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</details>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('#quick-nav');
+  if (menu) {
+    const toggle = menu.querySelector('summary');
+    menu.addEventListener('click', event => {
+      if (event.target instanceof Element && event.target.closest('a')) {
+        menu.open = false;
+      }
+    });
+
+    document.addEventListener('pointerdown', event => {
+      if (menu.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.open = false;
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menu.open) {
+        const focusIsInside = menu.contains(document.activeElement);
+        menu.open = false;
+        if (focusIsInside) toggle?.focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .quick-nav {
+    position: fixed;
+    z-index: 10;
+    right: max(.875rem, env(safe-area-inset-right));
+    bottom: max(.875rem, env(safe-area-inset-bottom));
+    margin: 0;
+  }
+
+  .quick-nav summary {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    min-height: 44px;
+    padding: .4rem .9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: 0 2px 10px #0002;
+    list-style: none;
+    font-size: .9rem;
+  }
+
+  .quick-nav summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .quick-nav summary::after {
+    content: '';
+    width: .42rem;
+    height: .42rem;
+    border-top: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    transform: translateY(.1rem) rotate(45deg);
+  }
+
+  .quick-nav[open] summary::after {
+    transform: translateY(-.1rem) rotate(225deg);
+  }
+
+  .quick-nav-panel {
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + .5rem);
+    width: min(19rem, calc(100vw - 2rem - env(safe-area-inset-right)));
+    max-height: min(27rem, calc(100dvh - 5rem - env(safe-area-inset-bottom)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: .65rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 6px 24px #0002;
+  }
+
+  .quick-nav-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .4rem;
+  }
+
+  .quick-nav-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    border-radius: 6px;
+    padding: .35rem .6rem;
+  }
+
+  .quick-nav-panel a:hover,
+  .quick-nav-panel a[aria-current='page'],
+  .quick-nav-actions a {
+    background: var(--paper);
+  }
+
+  .quick-nav-actions a {
+    justify-content: center;
+  }
+
+  .quick-nav-panel a[aria-current='page'] {
+    font-weight: 700;
+  }
+
+  .quick-nav-heading,
+  .quick-nav-course {
+    margin: .6rem .6rem .15rem;
+    color: var(--muted);
+    font-size: .875rem;
+    font-weight: 650;
+  }
+
+  .quick-nav-chapters {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

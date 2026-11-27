@@ -1,6 +1,7 @@
 ---
 import 'katex/dist/katex.min.css';
 import '../style.css';
+import QuickNavigation from '../components/QuickNavigation.astro';
 import {url} from '../lib/catalog';
 const {title}=Astro.props;
 ---
@@ -14,7 +15,7 @@ const {title}=Astro.props;
 </head>
 <body>
   <a class="skip" href="#main">跳到正文</a>
-  <header><nav aria-label="全站导航">
+  <header id="page-top" tabindex="-1"><nav aria-label="全站导航">
     <a class="brand" href={url()}>StudyLab</a>
     <a href={url('subjects/solid-state-physics/')}>课程</a>
     <a href={url('practice/')}>训练</a>
@@ -24,6 +25,7 @@ const {title}=Astro.props;
   </nav></header>
   <main id="main"><slot/></main>
   <footer>StudyLab · 课程笔记与物理实验</footer>
+  <QuickNavigation/>
   <script>
     const theme=document.querySelector<HTMLSelectElement>('#theme');
     if(theme){
